@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pillow
+pytesseract
+pydantic
+pydantic-settings
+python-dotenv
+aiofiles
