@@ -1,5 +1,4 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
-from typing import List
 
 import logging
 from api.routes.ocr_image import UploadImage

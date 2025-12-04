@@ -5,7 +5,7 @@
 
 import pytesseract
 from PIL import Image
-
+from services.kafka.index import KafakMessageBrokerService
 class OCRService:
     SUPPORTED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"}
     SUPPORTED_VIDEO_EXTENSIONS = {".move", ".mp4", ".wav"}
@@ -49,12 +49,13 @@ class OCRService:
             # Use pytesseract to extract text from the image
             text = pytesseract.image_to_string(img_for_ocr)
             # remove file from server
+            KafakMessageBrokerService.broadcast(text)
             return text.strip()
         except Exception as e:
             return f"Error extracting text: {str(e)}"
     
 
-
+OCRService.extract_text("sample_image.png")
 
     
 
