@@ -10,7 +10,7 @@ An Aspacelife Python project for Optical Character Recognition (OCR) to extract 
 
 ## Features
 - Extract text from image and video files
-- Support for multiple image formats (png,jpg,jpeg,tiff,bmp,gif)
+- Support for multiple image formats (png,jpg,jpeg,tiff,bmp,gif) 
 
 ## Requirements
 ```
