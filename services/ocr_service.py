@@ -5,7 +5,14 @@
 
 import pytesseract
 from PIL import Image
-from services.kafka.index import KafakMessageBrokerService
+from services.kafka.index import QuixstreamsMessageSender
+import sys
+import os
+import time
+from dotenv import load_dotenv
+import json
+load_dotenv()
+import tracemalloc
 class OCRService:
     SUPPORTED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"}
     SUPPORTED_VIDEO_EXTENSIONS = {".move", ".mp4", ".wav"}
@@ -43,19 +50,27 @@ class OCRService:
         :return: Extracted text as a string.
         """
         try:
-          # Open the image using Pillow
+            if sys.version_info >= (3, 4):
+                tracemalloc.start()
+            # Open the image using Pillow
             img_for_ocr = Image.open(image_path)
 
             # Use pytesseract to extract text from the image
             text = pytesseract.image_to_string(img_for_ocr)
             # remove file from server
-            KafakMessageBrokerService.broadcast(text)
+            sender = QuixstreamsMessageSender(topic_name="my-output-topic")
+            msg = json.dumps({ "data": text, "timestamp": time.time()})
+            sender.send_message(msg, key=os.environ.get("KAFKA_MESSAGE_KEY","ocr_key"))
+            
+            tracemalloc.stop()
+            # delete image from disk after processing
+            os.remove(image_path)
+            
             return text.strip()
         except Exception as e:
             return f"Error extracting text: {str(e)}"
     
 
-OCRService.extract_text("sample_image.png")
 
     
 
