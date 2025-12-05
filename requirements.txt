@@ -6,5 +6,5 @@ pytesseract
 pydantic
 pydantic-settings
 python-dotenv
-aiofiles
+opencv-python
 quixstreams

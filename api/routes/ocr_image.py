@@ -1,4 +1,4 @@
-from services.ocr_service import OCRService
+from services.image_ocr_service import ImageToTextServiceClass
 from utils.api_response import ApiResponse
 from fastapi import File, UploadFile, HTTPException
 from utils.save_file import save_upload_file
@@ -6,12 +6,12 @@ from pathlib import Path
 
 async def UploadImage(file: UploadFile):
     
-    if not OCRService.validate_extension_image(file.filename):
+    if not ImageToTextServiceClass.validate_image_extension(file.filename):
         return ApiResponse(False,"Unsupported image file extension",{})
-    saved_file = await save_upload_file(file)
+    saved_file = await save_upload_file(file,"image")
     print("Saved file info:", saved_file)
     # Return the success message and the full,file permanent file path
-    response = await OCRService.extract_text(saved_file.filepath)
+    response = await ImageToTextServiceClass.extract_text(saved_file.filepath)
     return ApiResponse(True,"Valid file",{
             "message": f"File '{saved_file.filename}' uploaded successfully!",
             "filename": saved_file.filename,

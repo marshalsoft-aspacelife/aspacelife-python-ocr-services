@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from typing import List
-from models.ocr_service import OCRService
+from services.image_ocr_service import ImageToTextServiceClass
 from utils.api_response import ApiResponse
 import logging
 
@@ -17,13 +17,13 @@ app = FastAPI(
 
 @app.post("/ocr/")
 async def upload_image(file: UploadFile = File(...)):
-    if not OCRService.validate_extension(file.filename):
+    if not ImageToTextServiceClass.validate_extension(file.filename):
         return ApiResponse(False,"Unsupported file extension",{})
     
     contents = await file.read()
-    if not OCRService.validate_size(len(contents)):
+    if not ImageToTextServiceClass.validate_size(len(contents)):
         raise HTTPException(status_code=400, detail=ApiResponse(False,"File size exceeds limit",{}))
     
-    response = OCRService.extract_text(file)
+    response = ImageToTextServiceClass.extract_text(file)
 
     return ApiResponse(True,"Valid file",{"filename": file.filename, "size": len(contents),"text":response})

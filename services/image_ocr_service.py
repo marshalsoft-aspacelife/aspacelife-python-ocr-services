@@ -13,9 +13,8 @@ from dotenv import load_dotenv
 import json
 load_dotenv()
 import tracemalloc
-class OCRService:
+class ImageToTextServiceClass:
     SUPPORTED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"}
-    SUPPORTED_VIDEO_EXTENSIONS = {".move", ".mp4", ".wav"}
     MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024  # 5MB
     
     def __init__(self, tesseract_cmd=None):
@@ -27,19 +26,12 @@ class OCRService:
             pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
     @classmethod
-    def validate_extension_image(cls, filename: str) -> bool:
+    def validate_image_extension(cls, filename: str) -> bool:
         return any(filename.lower().endswith(ext) for ext in cls.SUPPORTED_IMAGE_EXTENSIONS)
 
-    @classmethod
-    def validate_extension_video(cls, filename: str) -> bool:
-            return any(filename.lower().endswith(ext) for ext in cls.SUPPORTED_VIDEO_EXTENSIONS)
 
     @classmethod
     def validate_image_size(cls, file_size: int) -> bool:
-        return file_size <= cls.MAX_IMAGE_FILE_SIZE
-    
-    @classmethod
-    def validate_video_size(cls, file_size: int) -> bool:
         return file_size <= cls.MAX_IMAGE_FILE_SIZE
     
     @classmethod
@@ -57,10 +49,9 @@ class OCRService:
 
             # Use pytesseract to extract text from the image
             text = pytesseract.image_to_string(img_for_ocr)
-            # remove file from server
-            sender = QuixstreamsMessageSender(topic_name="my-output-topic")
-            msg = json.dumps({ "data": text, "timestamp": time.time()})
-            sender.send_message(msg, key=os.environ.get("KAFKA_MESSAGE_KEY","ocr_key"))
+            # sender = QuixstreamsMessageSender(topic_name="my-output-topic")
+            # msg = json.dumps({ "data": text, "timestamp": time.time()})
+            # sender.send_message(msg, key=os.environ.get("KAFKA_MESSAGE_KEY","ocr_key"))
             
             tracemalloc.stop()
             # delete image from disk after processing
