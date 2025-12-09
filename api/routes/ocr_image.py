@@ -4,7 +4,10 @@ from fastapi import File, UploadFile, HTTPException
 from utils.save_file import save_upload_file
 from pathlib import Path
 
-async def UploadImage(file: UploadFile):
+async def UploadImage(
+        file: UploadFile,
+        postId:str,
+        resourceId:str):
     
     if not ImageToTextServiceClass.validate_image_extension(file.filename):
         return ApiResponse(False,"Unsupported image file extension",{})
